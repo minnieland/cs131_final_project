@@ -1,47 +1,30 @@
 import cv2
+import time
 # mediapipe only works with python 3.9-3.12
 import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1, 
-                                  refine_landmarks=True)
-mp_drawing = mp.solutions.drawing_utils
-drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+base_options = python.BaseOptions(model_asset_path='face_landmarker.task')
+options = vision.FaceLandmarkerOptions(
+    base_options=base_options,
+    running_mode=vision.RunningMode.IMAGE,
+    num_faces=1,
+    min_face_detection_confidence=0.5,
+    min_tracking_confidence=0.5,
+)
+face_landmarker = vision.FaceLandmarker.create_from_options(options)
 
-def get_face_landmarks():
-    video_capture = cv2.VideoCapture(0)
-    
-    if not video_capture.isOpened():
-        print("Failed to open camera")
-        return
-    
-    while video_capture.isOpened():
-        success, image = video_capture.read()
-        if not success:
-            print("Failed to read frame")
-            continue
-        
-        # RGB needed for mediapipe
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = face_mesh.process(image)
+def get_face_landmarks(frame):
+    h, w = frame.shape[:2]
+    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+    results = face_landmarker.detect(mp_image)
 
-        #draw landmarks on the image
-        if results.multi_face_landmarks:
-            for face_landmarks in results.multi_face_landmarks:
-                mp_drawing.draw_landmarks(
-                    image=image,
-                    landmark_list=face_landmarks,
-                    connections=mp_face_mesh.FACEMESH_TESSELATION,
-                    landmark_drawing_spec=drawing_spec,
-                    connection_drawing_spec=drawing_spec)
-
-        cv2.imshow('MediaPipe Face Mesh', image)
-        # quit with 'esc' key
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-    
-    video_capture.release()
-    cv2.destroyAllWindows()
+    if results.face_landmarks:
+        landmarks = results.face_landmarks[0]
+        return [(int(lm.x * w), int(lm.y * h)) for lm in landmarks]
+    return None
 
 def extract_landmarks(face_landmarks, width, height):
     landmarks = []
