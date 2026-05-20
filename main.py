@@ -42,10 +42,11 @@ def main():
 
     #mqtt setup
     BROKER = "broker.hivemq.com" #test server. this will become the macbooks local IP address
-    PORT = 1883
+    PORT = 8000
     TOPIC = "cs131/edge/alerts"
     
-    mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2) #create what will send the message 
+    #mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2) #create what will send the message 
+    mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, transport="websockets") #added websockets to maybe prevent firewall in windows from blocking
     try:
         mqtt_client.connect(BROKER, PORT, 60) #timer of 60 seconds to connect to the broker 
         mqtt_client.loop_start() # Runs the network loop in the background (diff thread) to not lag the video
