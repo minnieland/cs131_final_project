@@ -3,6 +3,8 @@ import time
 import os
 import sys
 import numpy as np
+import json
+import paho.mqtt.client as mqtt #networking protocol
 # mediapipe only works with python 3.9-3.12
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -37,6 +39,23 @@ def main():
     
     fps = video_capture.get(cv2.CAP_PROP_FPS) or 30
     detector = DrowsinessDetector(fps_estimate=fps)
+
+    #mqtt setup
+    BROKER = "broker.hivemq.com" #test server. this will become the macbooks local IP address
+    PORT = 8000
+    TOPIC = "cs131/edge/alerts"
+    
+    #mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2) #create what will send the message 
+    mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, transport="websockets") #added websockets to maybe prevent firewall in windows from blocking
+    try:
+        mqtt_client.connect(BROKER, PORT, 60) #timer of 60 seconds to connect to the broker 
+        mqtt_client.loop_start() # Runs the network loop in the background (diff thread) to not lag the video
+        print(f"Connected to MQTT Broker: {BROKER}")
+    except Exception as e:
+        print(f"MQTT Connection failed: {e}")
+        
+    last_status = "ALERT" #remember previous state. makes sure u only send alert the moment they go from awake to sleep.
+    #end of mqtt setup
 
     # calibration: measure open-eye EAR for 2 seconds to set threshold
     calib_ears  = []
@@ -93,6 +112,22 @@ def main():
 
             # DrowsinessDetector.update from drowsiness_detection
             status, perclos = detector.update(ear)
+
+            #pub logic
+            #Only send message on transition into DROWSY state
+            if status == "DROWSY" and last_status != "DROWSY":
+                payload = json.dumps({
+                    "device": "Jetson_Orin_Nano",
+                    "event": "DROWSY_DRIVER",
+                    "ear_value": round(ear, 3),
+                    "perclos_value": round(perclos, 3),
+                    "timestamp": time.time()
+                })
+                mqtt_client.publish(TOPIC, payload)
+                print(f"\n[NETWORK PUSH] Alert sent to Fog Layer: {payload}\n")
+                
+            last_status = status
+            #end of pub logic
 
         # draw_hud from drowsiness_detection (always drawn, even without landmarks)
         draw_hud(image, ear, status, detector.blink_count, perclos, detector)
