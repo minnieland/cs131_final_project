@@ -1,5 +1,9 @@
-# cs131_final_project
-Building a program to detect drowsiness and distraction in drivers.
+# Drowsiness/Distraction Detection
+Building an Edge program to detect drowsiness and distraction in drivers.
+
+**System Diagram:**
+
+![System Diagram](/System_Diagram.png)
 
 **Technical Worksheet:**
 **Hardware Components**
