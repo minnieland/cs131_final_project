@@ -41,7 +41,7 @@ def main():
     detector = DrowsinessDetector(fps_estimate=fps)
 
     #mqtt setup
-    BROKER = "test.mosquitto.org" #test server. this will become the macbooks local IP address
+    BROKER = "broker.hivemq.com" #test server. this will become the macbooks local IP address
     PORT = 1883
     TOPIC = "cs131/edge/alerts"
     
