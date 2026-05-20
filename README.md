@@ -16,9 +16,10 @@ Building an Edge program to detect drowsiness and distraction in drivers.
 7. **Networking components:** WiFi connection. Will enable communication between MacBook, Jetson, and the cloud with Pub/Sub API.
 **Software Tools and Libraries**
 1. **Python 3:** Primary language for writing all detection logic, alert handling, and system orchestration
-2. **Database (AWS)** - to store detection data
-3. **OpenCV** - video capture, image processing
-4. **MediaPipe** - facial landmark detection
+2. **JavaScript:** Langage for displaying metrics
+3. **Database (AWS)** - to store detection data
+4. **OpenCV** - video capture, image processing
+5. **MediaPipe** - facial landmark detection
 **Detection Methods**
 1. **Drowsiness → Eye Aspect Ratio:** Measures the ratio of eye height to width using facial landmarks. If EAR drops below a threshold for 1 or more consecutive seconds, the driver is flagged as drowsy.
 2. **Distraction (Phone or looking away):** Calculates the downward tilt of the head using 3D pose estimation. A downward pitch beyond a threshold signals the driver may be looking at their phone.
