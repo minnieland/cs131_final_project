@@ -24,7 +24,7 @@ from drowsiness_detection import (
 )
 
 # ADDED: import distraction logic
-from distraction_detection import DistractionDetector, get_head_pose
+from Distraction_Detection import DistractionDetector, get_head_pose
 
 EAR_THRESHOLD = _EAR_THRESHOLD
 
