@@ -49,7 +49,7 @@ Building an Edge program to detect drowsiness and distraction in drivers.
 5. Connection drops on public broker server (Used free MQTT broker over weak UCR WiFi caused temporary disconnects, used Paho-MQTT library with built in reconnection logic and made sure our JSON payloads had minimal information)
 
 **Services:**
-1. **Database (AWS)** - to store detection data
+1. **Database (Firestore)** - to store detection data
 2. **OpenCV** - video capture, image processing
 3. **MediaPipe** - facial landmark detection
 4. **FastAPI** - REST API running on MacBook
