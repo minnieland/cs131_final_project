@@ -69,12 +69,17 @@ Building an Edge program to detect drowsiness and distraction in drivers.
 ## Running the System
 Open three terminals:
 * Terminal 1 - Bridge Server
+
   `cd backend`
+  
   `uvicorn bridge_server:app --reload --host 0.0.0.0 --port 8000`
 * Terminal 2 - React Dashboard
+
   `cd frontend/driver-dashboard`
+  
   `npm run dev`
 * Terminal 3 - Detection Pipeline
+
   `python main.py`
 
 Simulating Nearby Vehicle Alerts (Two Jetsons)
