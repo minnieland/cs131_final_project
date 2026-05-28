@@ -31,9 +31,9 @@ export const ALERT_SOUNDS = {
 
 // How often (in ticks) to repeat audio for each level
 export const ALERT_SOUND_INTERVAL = {
-  warning:  10, // every 5s
-  alert:     6, // every 3s
-  critical:  4, // every 2s
+  warning:  1, // every 5s
+  alert:     1, // every 3s
+  critical:  1, // every 2s
 };
 
 // Chart Configs

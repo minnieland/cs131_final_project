@@ -159,6 +159,22 @@ def main():
             last_status = status
             last_distraction_status = distraction_result["distracted"]  # ADDED
 
+        # publish live metrics every frame for dashboard
+        payload = json.dumps({
+            "device":       "Jetson_Orin_Nano",
+            "event":        "METRICS",
+            "ear_value":    round(ear, 3),
+            "perclos_value": round(perclos, 3),
+            "pitch":        distraction_result["pitch"],
+            "yaw":          distraction_result["yaw"],
+            "roll":         distraction_result["roll"],
+            "status":       distraction_result["status"] if distraction_result["distracted"] else status,
+            "blink_count":  detector.blink_count,
+            "face_present": landmarks is not None,
+            "timestamp":    time.time()
+        })
+        mqtt_client.publish(TOPIC, payload)
+
         draw_hud(image, ear, status, detector.blink_count, perclos, detector)
 
         cv2.imshow('MediaPipe Face Mesh', image)

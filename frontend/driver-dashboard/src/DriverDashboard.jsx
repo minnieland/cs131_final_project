@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 
 // Data Source
-// When backend is ready
-// import { useMockData as useData } from "./hooks/useMockData";
-// -> import { useAPIData as useData } from "./hooks/useAPIData";
-import { useMockData as useData } from "./hooks/useMockData";
+import { useAPIData as useData } from "./hooks/useAPIData";
 
 // Hooks
-import { useAlertLogic } from "./hooks/useAlertLogic";
+// import { useAlertLogic } from "./hooks/useAlertLogic";
 import { useAudioAlerts } from "./hooks/useAudioAlerts";
 
 // Components
@@ -16,25 +13,55 @@ import { ChartCard } from "./components/ChartCard";
 import { AlertBanner } from "./components/AlertBanner";
 import { AlertLog } from "./components/AlertLog";
 import { SessionStats } from "./components/SessionStats";
-import { SimControls } from "./components/SimControls";
+import { TrendsPanel } from "./components/TrendsPanel";
 
 // Constants
 import { STATUS, THRESHOLDS, CHART_CONFIGS, ALERT_SOUND_INTERVAL } from "./constants";
 
 // DASHBOARD
 export default function DriverDashboard() {
-    const [simState, setSimState] = useState({
-        drowsy:     false,
-        lookAway:   false,
-        lookDown:   false,
-        facePresent: true,
-    });
 
     // Live Data (metrics + chart histories)
-    const { metrics, earHistory, yawHistory, pitchHistory } = useData(simState);
+    const { metrics, earHistory, yawHistory, pitchHistory, alertLog } = useData();
 
     // Alert Classification derived from metrics
-    const { alertLevel, alertMessage, alertLog, sessionStats } = useAlertLogic(metrics);
+    // const { alertLevel, alertMessage, alertLog, sessionStats } = useAlertLogic(metrics);
+    const backendStatus = metrics.status ?? "ALERT";
+
+    let alertLevel = "safe";
+    let alertMessage = "";
+
+    switch (backendStatus) {
+      case "DROWSY":
+        alertLevel = "critical";
+        alertMessage = "Driver drowsiness detected";
+        break;
+
+      case "DISTRACTED":
+        alertLevel = "alert";
+        alertMessage = "Driver distraction detected";
+        break;
+      
+      case "WARNING":
+        alertLevel = "warning";
+        alertMessage = "Head movement detected"
+        break;
+
+      case "NO_FACE":
+        alertLevel = "critical";
+        alertMessage = "No driver detected";
+        break;
+
+      default:
+        alertLevel = "safe";
+        alertMessage = "";
+    }
+
+    const sessionStats = {
+      drowsyEvents:   alertLog.filter(e => e.level === "critical").length,
+      distractEvents: alertLog.filter(e => e.level === "alert").length,
+      sessionStart:   Date.now(),
+    };
 
     // Audio
     const playAlert = useAudioAlerts();
@@ -190,10 +217,11 @@ export default function DriverDashboard() {
           <ChartCard data={pitchHistory} {...CHART_CONFIGS.pitch} />
           <AlertLog alertLog={alertLog} />
         </div>
- 
-        {/* Simulation controls (dev only) */}
-        <SimControls simState={simState} setSimState={setSimState} />
- 
+
+        {/* Trends panel */}
+        <div style={{ marginBottom: 12 }}>
+          <TrendsPanel />
+        </div>
       </div>
     </div>
   );
