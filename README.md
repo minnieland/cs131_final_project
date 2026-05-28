@@ -3,7 +3,7 @@ Building an Edge program to detect drowsiness and distraction in drivers.
 
 **System Diagram:**
 
-![System Diagram](/System.png)
+![System Diagram](/SystemDiagram.png)
 
 **Workload Distribution Diagram:**
 
