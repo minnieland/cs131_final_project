@@ -27,7 +27,7 @@ Building an Edge program to detect drowsiness and distraction in drivers.
 **Software Tools and Libraries**
 1. **Python 3:** Primary language for writing all detection logic, alert handling, and system orchestration
 2. **JavaScript:** Langage for displaying metrics
-3. **Database (AWS)** - to store detection data
+3. **Database (Firestore)** - to store detection data
 4. **OpenCV** - video capture, image processing
 5. **MediaPipe** - facial landmark detection
 6. **FastAPI** - REST API running on MacBook
