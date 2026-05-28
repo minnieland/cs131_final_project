@@ -1,6 +1,5 @@
 import cv2
 import time
-# mediapipe only works with python 3.9-3.12
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision

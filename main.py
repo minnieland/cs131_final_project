@@ -5,9 +5,6 @@ import sys
 import numpy as np
 import json
 import paho.mqtt.client as mqtt
-import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'edge'))
 
